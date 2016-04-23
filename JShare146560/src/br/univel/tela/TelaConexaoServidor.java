@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -23,12 +24,17 @@ import java.awt.Color;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
+import javax.swing.JScrollPane;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
 
 public class TelaConexaoServidor extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField txtIP;
+	private JTextField txtPorta;
 
 	/**
 	 * Launch the application.
@@ -55,18 +61,18 @@ public class TelaConexaoServidor extends JFrame {
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
-		JMenu mnConectar = new JMenu("Conectar");
-		menuBar.add(mnConectar);
-		mnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
-		
-		JMenu mnDesconectar = new JMenu("Desconectar");
-		menuBar.add(mnDesconectar);
-		mnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		JButton btnConectar = new JButton("Conectar");
+		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
+		menuBar.add(btnConectar);
+		
+		JButton btnDesconectar = new JButton("Desconectar");
+		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
+		menuBar.add(btnDesconectar);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
@@ -85,14 +91,14 @@ public class TelaConexaoServidor extends JFrame {
 		gbc_lblIp.gridy = 0;
 		panel.add(lblIp, gbc_lblIp);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 0;
-		panel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		txtIP = new JTextField();
+		GridBagConstraints gbc_txtIP = new GridBagConstraints();
+		gbc_txtIP.insets = new Insets(0, 0, 5, 0);
+		gbc_txtIP.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtIP.gridx = 1;
+		gbc_txtIP.gridy = 0;
+		panel.add(txtIP, gbc_txtIP);
+		txtIP.setColumns(10);
 		
 		JLabel lblPorta = new JLabel("Porta");
 		GridBagConstraints gbc_lblPorta = new GridBagConstraints();
@@ -102,24 +108,27 @@ public class TelaConexaoServidor extends JFrame {
 		gbc_lblPorta.gridy = 1;
 		panel.add(lblPorta, gbc_lblPorta);
 		
-		textField_1 = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 1;
-		panel.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		txtPorta = new JTextField();
+		txtPorta.setText("1818");
+		GridBagConstraints gbc_txtPorta = new GridBagConstraints();
+		gbc_txtPorta.insets = new Insets(0, 0, 5, 0);
+		gbc_txtPorta.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPorta.gridx = 1;
+		gbc_txtPorta.gridy = 1;
+		panel.add(txtPorta, gbc_txtPorta);
+		txtPorta.setColumns(10);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.gridwidth = 2;
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 2;
+		panel.add(scrollPane, gbc_scrollPane);
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setBackground(Color.GRAY);
-		GridBagConstraints gbc_textArea = new GridBagConstraints();
-		gbc_textArea.gridwidth = 2;
-		gbc_textArea.insets = new Insets(0, 0, 0, 5);
-		gbc_textArea.fill = GridBagConstraints.BOTH;
-		gbc_textArea.gridx = 0;
-		gbc_textArea.gridy = 2;
-		panel.add(textArea, gbc_textArea);
+		scrollPane.setViewportView(textArea);
 	}
 
 }

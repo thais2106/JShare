@@ -55,18 +55,18 @@ public class TelaConexaoCliente extends JFrame {
 		
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
-		JMenu mnConectar = new JMenu("Conectar");
-		menuBar.add(mnConectar);
-		mnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
-		
-		JMenu mnDesconectar = new JMenu("Desconectar");
-		menuBar.add(mnDesconectar);
-		mnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
+		
+		JButton btnConectar = new JButton("Conectar");
+		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
+		menuBar.add(btnConectar);
+		
+		JButton btnDesconectar = new JButton("Desconectar");
+		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
+		menuBar.add(btnDesconectar);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
