@@ -22,7 +22,7 @@ import javax.swing.JTable;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 
-public class TelaConexao extends JFrame {
+public class TelaConexaoCliente extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -37,7 +37,7 @@ public class TelaConexao extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					TelaConexao frame = new TelaConexao();
+					TelaConexaoCliente frame = new TelaConexaoCliente();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -49,7 +49,7 @@ public class TelaConexao extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public TelaConexao() {
+	public TelaConexaoCliente() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		
