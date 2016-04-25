@@ -15,6 +15,12 @@ public class Cliente implements Serializable {
 	private String nome;
 	private String ip;
 	private int porta;
+	
+	public Cliente(String nome, String ip, int porta) {
+		this.nome = nome;
+		this.ip = ip;
+		this.porta = porta;
+	}
 
 	public String getNome() {
 		return nome;

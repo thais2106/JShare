@@ -1,40 +1,50 @@
 package br.univel.tela;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import java.awt.CardLayout;
-import java.awt.GridBagLayout;
+import br.dagostini.jshare.comum.pojos.Arquivo;
+import br.dagostini.jshare.comun.Cliente;
+import br.dagostini.jshare.comun.IServer;
 
-import javax.swing.JLabel;
-
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-
-import javax.swing.JTextField;
-import javax.swing.JTextArea;
-
-import java.awt.Color;
-
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JScrollPane;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.JMenuItem;
-
-public class TelaConexaoServidor extends JFrame {
+public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	private JPanel contentPane;
 	private JTextField txtIP;
 	private JTextField txtPorta;
+	Remote servidor;
+	private Registry registry;
+	private JButton btnDesconectar;
+	private JButton btnConectar;
+	private JTextArea textArea;
+	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
 
 	/**
 	 * Launch the application.
@@ -66,11 +76,21 @@ public class TelaConexaoServidor extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnConectar = new JButton("Conectar");
+		btnConectar = new JButton("Conectar");
+		btnConectar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				iniciarServico();
+			}
+		});
 		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
 		menuBar.add(btnConectar);
 		
-		JButton btnDesconectar = new JButton("Desconectar");
+		btnDesconectar = new JButton("Desconectar");
+		btnDesconectar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				pararServico();
+			}
+		});
 		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		menuBar.add(btnDesconectar);
 		
@@ -126,9 +146,104 @@ public class TelaConexaoServidor extends JFrame {
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setBackground(Color.GRAY);
 		scrollPane.setViewportView(textArea);
+	}
+	
+
+	protected void pararServico() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	protected void iniciarServico() {
+		
+		String ip = txtIP.getText().trim();
+		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
+			JOptionPane.showMessageDialog(this, "Digite um endereço de IP válido!");
+			return;
+		}
+		
+		
+		String porta = txtPorta.getText().trim();
+
+		if (!porta.matches("[0-9]+") || porta.length() > 5) {
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
+			return;
+		}
+		
+		int intPorta = Integer.parseInt(porta);
+		if (intPorta < 1024 || intPorta > 65535) {
+			JOptionPane.showMessageDialog(this, "A porta deve estar entre 1024 e 65535");
+			return;
+		}
+
+		try {
+
+			servidor = (Remote) UnicastRemoteObject.exportObject((Remote) this, 0);
+			registry = LocateRegistry.createRegistry(intPorta);
+			registry.rebind(IServer.NOME_SERVICO, servidor);
+
+			imprimir("Serviço iniciado.");
+
+			txtIP.setEnabled(false);
+			txtPorta.setEnabled(false);
+			btnConectar.setEnabled(false);
+
+			btnDesconectar.setEnabled(true);
+
+		} catch (RemoteException e) {
+			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta já está sendo usada.");
+			e.printStackTrace();
+		}
+
+		
+	}
+
+	private void imprimir(String string) {
+		textArea.append(sdf.format(new Date()));
+		textArea.append(" -> ");
+		textArea.append(string);
+		textArea.append("\n");
+	}
+
+	@Override
+	public void registrarCliente(Cliente c) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void desconectar(Cliente c) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

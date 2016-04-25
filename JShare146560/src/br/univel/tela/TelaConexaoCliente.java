@@ -2,33 +2,49 @@ package br.univel.tela;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import java.awt.GridBagLayout;
-
-import javax.swing.JLabel;
-
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
-import javax.swing.JTextField;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 
-public class TelaConexaoCliente extends JFrame {
+import br.dagostini.jshare.comum.pojos.Arquivo;
+import br.dagostini.jshare.comun.Cliente;
+import br.dagostini.jshare.comun.IServer;
+
+public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 
 	private JPanel contentPane;
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
+	private JTextField txtNome;
+	private JTextField txtIP;
+	private JTextField txtPorta;
 	private JTable table;
+	private Registry registry;
+	private IServer servidor;
+	private Cliente cliente;
+	private JButton btnConectar;
+	private JButton btnDesconectar;
+	private JButton btnPesquisar;
+	private JButton btnDownload;
 
 	/**
 	 * Launch the application.
@@ -60,13 +76,20 @@ public class TelaConexaoCliente extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		
-		JButton btnConectar = new JButton("Conectar");
+		btnConectar = new JButton("Conectar");
+		btnConectar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				conectar();
+			}
+		});
 		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
 		menuBar.add(btnConectar);
 		
-		JButton btnDesconectar = new JButton("Desconectar");
+		
+		btnDesconectar = new JButton("Desconectar");
 		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		menuBar.add(btnDesconectar);
+		btnDesconectar.setEnabled(false);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
@@ -85,15 +108,15 @@ public class TelaConexaoCliente extends JFrame {
 		gbc_lblNome.gridy = 1;
 		panel.add(lblNome, gbc_lblNome);
 		
-		textField = new JTextField();
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.gridwidth = 3;
-		gbc_textField.insets = new Insets(0, 0, 5, 5);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 1;
-		panel.add(textField, gbc_textField);
-		textField.setColumns(10);
+		txtNome = new JTextField();
+		GridBagConstraints gbc_txtNome = new GridBagConstraints();
+		gbc_txtNome.gridwidth = 3;
+		gbc_txtNome.insets = new Insets(0, 0, 5, 5);
+		gbc_txtNome.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtNome.gridx = 1;
+		gbc_txtNome.gridy = 1;
+		panel.add(txtNome, gbc_txtNome);
+		txtNome.setColumns(10);
 		
 		JLabel lblIp = new JLabel("IP");
 		GridBagConstraints gbc_lblIp = new GridBagConstraints();
@@ -103,15 +126,15 @@ public class TelaConexaoCliente extends JFrame {
 		gbc_lblIp.gridy = 2;
 		panel.add(lblIp, gbc_lblIp);
 		
-		textField_1 = new JTextField();
-		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.gridwidth = 3;
-		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_1.gridx = 1;
-		gbc_textField_1.gridy = 2;
-		panel.add(textField_1, gbc_textField_1);
-		textField_1.setColumns(10);
+		txtIP = new JTextField();
+		GridBagConstraints gbc_txtIP = new GridBagConstraints();
+		gbc_txtIP.gridwidth = 3;
+		gbc_txtIP.insets = new Insets(0, 0, 5, 5);
+		gbc_txtIP.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtIP.gridx = 1;
+		gbc_txtIP.gridy = 2;
+		panel.add(txtIP, gbc_txtIP);
+		txtIP.setColumns(10);
 		
 		JLabel lblPorta = new JLabel("Porta");
 		GridBagConstraints gbc_lblPorta = new GridBagConstraints();
@@ -121,17 +144,18 @@ public class TelaConexaoCliente extends JFrame {
 		gbc_lblPorta.gridy = 3;
 		panel.add(lblPorta, gbc_lblPorta);
 		
-		textField_2 = new JTextField();
-		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.gridwidth = 3;
-		gbc_textField_2.insets = new Insets(0, 0, 5, 5);
-		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField_2.gridx = 1;
-		gbc_textField_2.gridy = 3;
-		panel.add(textField_2, gbc_textField_2);
-		textField_2.setColumns(10);
+		txtPorta = new JTextField();
+		txtPorta.setText("1818");
+		GridBagConstraints gbc_txtPorta = new GridBagConstraints();
+		gbc_txtPorta.gridwidth = 3;
+		gbc_txtPorta.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPorta.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPorta.gridx = 1;
+		gbc_txtPorta.gridy = 3;
+		panel.add(txtPorta, gbc_txtPorta);
+		txtPorta.setColumns(10);
 		
-		JButton btnPesquisar = new JButton("Pesquisar");
+		btnPesquisar = new JButton("Pesquisar");
 		btnPesquisar.setIcon(new ImageIcon("src/br/univel/img/search.png"));
 		GridBagConstraints gbc_btnPesquisar = new GridBagConstraints();
 		gbc_btnPesquisar.fill = GridBagConstraints.HORIZONTAL;
@@ -139,8 +163,9 @@ public class TelaConexaoCliente extends JFrame {
 		gbc_btnPesquisar.gridx = 1;
 		gbc_btnPesquisar.gridy = 5;
 		panel.add(btnPesquisar, gbc_btnPesquisar);
+		btnPesquisar.setEnabled(false);
 		
-		JButton btnDownload = new JButton("Download");
+		btnDownload = new JButton("Download");
 		btnDownload.setIcon(new ImageIcon("src/br/univel/img/download.png"));
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
@@ -148,6 +173,7 @@ public class TelaConexaoCliente extends JFrame {
 		gbc_btnDownload.gridx = 3;
 		gbc_btnDownload.gridy = 5;
 		panel.add(btnDownload, gbc_btnDownload);
+		btnDownload.setEnabled(false);
 		
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
@@ -159,6 +185,95 @@ public class TelaConexaoCliente extends JFrame {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+	}
+
+	protected void conectar() {
+		String nomeCliente = txtNome.getText();
+		if (nomeCliente.isEmpty()){
+			JOptionPane.showMessageDialog(this, "Digite um nome!");
+			txtNome.requestFocus();
+			return;
+		}
+		
+		String ip = txtIP.getText().trim();
+		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
+			JOptionPane.showMessageDialog(this, "Digite um endereço de IP válido!");
+			txtIP.requestFocus();
+			return;
+		}
+		
+		String porta = txtPorta.getText().trim();
+		if (!porta.matches("[0-9]+") || porta.length() > 5) {
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
+			txtPorta.requestFocus();
+			return;
+		}
+		
+		int intPorta = Integer.parseInt(porta);
+		
+		try {
+			registry = LocateRegistry.getRegistry(ip, intPorta);
+			servidor = (IServer) registry.lookup(NOME_SERVICO);
+			//cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
+			
+			Cliente cliente = new Cliente(nomeCliente, ip, intPorta);
+			
+			servidor.registrarCliente(cliente);
+			
+			btnDesconectar.setEnabled(true);
+			btnPesquisar.setEnabled(true);
+			btnDownload.setEnabled(true);
+			txtNome.setEnabled(false);
+			txtIP.setEnabled(false);
+			txtPorta.setEnabled(false);
+			btnConectar.setEnabled(false);
+			
+			
+		} catch (RemoteException e) {
+			// TODO: handle exception
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@Override
+	public void registrarCliente(Cliente c) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
+			throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void desconectar(Cliente c) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
