@@ -31,7 +31,7 @@ import br.dagostini.jshare.comum.pojos.Arquivo;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 
-public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
+public class TelaConexaoCliente extends JFrame implements IServer{
 
 	private JPanel contentPane;
 	private JTextField txtNome;
@@ -87,6 +87,11 @@ public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 		
 		
 		btnDesconectar = new JButton("Desconectar");
+		btnDesconectar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				desconectar();
+			}
+		});
 		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		menuBar.add(btnDesconectar);
 		btnDesconectar.setEnabled(false);
@@ -187,6 +192,16 @@ public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 		scrollPane.setViewportView(table);
 	}
 
+	protected void desconectar() {
+		try {
+			desconectar(cliente);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
 	protected void conectar() {
 		String nomeCliente = txtNome.getText();
 		if (nomeCliente.isEmpty()){
@@ -216,9 +231,11 @@ public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 			servidor = (IServer) registry.lookup(NOME_SERVICO);
 			//cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
 			
-			Cliente cliente = new Cliente(nomeCliente, ip, intPorta);
+			cliente = new Cliente(nomeCliente, ip, intPorta);
 			
 			servidor.registrarCliente(cliente);
+
+			//fazer publicar lista de arquivos ao conectar
 			
 			btnDesconectar.setEnabled(true);
 			btnPesquisar.setEnabled(true);
@@ -243,7 +260,7 @@ public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
@@ -266,14 +283,17 @@ public class TelaConexaoCliente extends JFrame implements Runnable, IServer{
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
-		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
+		if (servidor != null){
+			servidor.desconectar(c);
+			//UnicastRemoteObject.unexportObject(this, true);
+			servidor = null;
+		}
 		
+		btnDesconectar.setEnabled(false);
+		btnConectar.setEnabled(true);
+		txtNome.setEnabled(true);
+		txtIP.setEnabled(true);
+		txtPorta.setEnabled(true);
 	}
-
 }

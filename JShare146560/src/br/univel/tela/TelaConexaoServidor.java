@@ -153,7 +153,24 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	
 
 	protected void pararServico() {
-		// TODO Auto-generated method stub
+		imprimir("Parando serviço...");
+
+		try {
+			UnicastRemoteObject.unexportObject(this, true);
+			UnicastRemoteObject.unexportObject(registry, true);
+
+			txtIP.setEnabled(true);
+			txtPorta.setEnabled(true);
+			btnConectar.setEnabled(true);
+
+			btnDesconectar.setEnabled(false);
+
+			imprimir("Serviço encerrado.");
+
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+
 		
 	}
 
@@ -210,7 +227,8 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
-		// TODO Auto-generated method stub
+		
+		imprimir(c.getNome());
 		
 	}
 
@@ -236,7 +254,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
-		// TODO Auto-generated method stub
+		imprimir(c.getNome()+"saiu");
 		
 	}
 
