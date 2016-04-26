@@ -153,7 +153,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	
 
 	protected void pararServico() {
-		imprimir("Parando serviço...");
+		imprimir("Parando serviï¿½o...");
 
 		try {
 			UnicastRemoteObject.unexportObject(this, true);
@@ -165,7 +165,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 			btnDesconectar.setEnabled(false);
 
-			imprimir("Serviço encerrado.");
+			imprimir("Serviï¿½o encerrado.");
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -178,7 +178,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		
 		String ip = txtIP.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
-			JOptionPane.showMessageDialog(this, "Digite um endereço de IP válido!");
+			JOptionPane.showMessageDialog(this, "Digite um endereï¿½o de IP vï¿½lido!");
 			return;
 		}
 		
@@ -186,7 +186,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		String porta = txtPorta.getText().trim();
 
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
-			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numï¿½rico de no mï¿½ximo 5 dï¿½gitos!");
 			return;
 		}
 		
@@ -198,11 +198,11 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 		try {
 
-			servidor = (Remote) UnicastRemoteObject.exportObject((Remote) this, 0);
+			servidor = (IServer) UnicastRemoteObject.exportObject((IServer) this, 0);
 			registry = LocateRegistry.createRegistry(intPorta);
 			registry.rebind(IServer.NOME_SERVICO, servidor);
 
-			imprimir("Serviço iniciado.");
+			imprimir("Serviï¿½o iniciado.");
 
 			txtIP.setEnabled(false);
 			txtPorta.setEnabled(false);
@@ -211,7 +211,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			btnDesconectar.setEnabled(true);
 
 		} catch (RemoteException e) {
-			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta já está sendo usada.");
+			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta jï¿½ estï¿½ sendo usada.");
 			e.printStackTrace();
 		}
 

@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
@@ -37,7 +38,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	private JTextField txtNome;
 	private JTextField txtIP;
 	private JTextField txtPorta;
-	private JTable table;
+	private JTable tableArquivos;
 	private Registry registry;
 	private IServer servidor;
 	private Cliente cliente;
@@ -188,8 +189,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		gbc_scrollPane.gridy = 6;
 		panel.add(scrollPane, gbc_scrollPane);
 		
-		table = new JTable();
-		scrollPane.setViewportView(table);
+		tableArquivos = new JTable();
+		scrollPane.setViewportView(tableArquivos);
 	}
 
 	protected void desconectar() {
@@ -212,14 +213,14 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 		String ip = txtIP.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
-			JOptionPane.showMessageDialog(this, "Digite um endereço de IP válido!");
+			JOptionPane.showMessageDialog(this, "Digite um endereï¿½o de IP vï¿½lido!");
 			txtIP.requestFocus();
 			return;
 		}
 		
 		String porta = txtPorta.getText().trim();
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
-			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numérico de no máximo 5 dígitos!");
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numï¿½rico de no mï¿½ximo 5 dï¿½gitos!");
 			txtPorta.requestFocus();
 			return;
 		}
@@ -229,9 +230,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		try {
 			registry = LocateRegistry.getRegistry(ip, intPorta);
 			servidor = (IServer) registry.lookup(NOME_SERVICO);
-			//cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
-			
 			cliente = new Cliente(nomeCliente, ip, intPorta);
+			cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
 			
 			servidor.registrarCliente(cliente);
 
@@ -264,7 +264,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	@Override
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
@@ -286,7 +286,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 		if (servidor != null){
 			servidor.desconectar(c);
-			//UnicastRemoteObject.unexportObject(this, true);
+			UnicastRemoteObject.unexportObject(this, true);
 			servidor = null;
 		}
 		
