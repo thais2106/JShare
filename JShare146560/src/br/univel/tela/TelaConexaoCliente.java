@@ -7,11 +7,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +48,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	private JButton btnDesconectar;
 	private JButton btnPesquisar;
 	private JButton btnDownload;
+	private JTextField txtPesquisar;
+	private JLabel lblPesquisar;
 
 	/**
 	 * Launch the application.
@@ -101,9 +105,9 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		contentPane.add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		JLabel lblNome = new JLabel("Nome");
@@ -134,7 +138,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 		txtIP = new JTextField();
 		GridBagConstraints gbc_txtIP = new GridBagConstraints();
-		gbc_txtIP.gridwidth = 3;
 		gbc_txtIP.insets = new Insets(0, 0, 5, 5);
 		gbc_txtIP.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtIP.gridx = 1;
@@ -153,7 +156,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		txtPorta = new JTextField();
 		txtPorta.setText("1818");
 		GridBagConstraints gbc_txtPorta = new GridBagConstraints();
-		gbc_txtPorta.gridwidth = 3;
 		gbc_txtPorta.insets = new Insets(0, 0, 5, 5);
 		gbc_txtPorta.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtPorta.gridx = 1;
@@ -161,36 +163,68 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(txtPorta, gbc_txtPorta);
 		txtPorta.setColumns(10);
 		
+		lblPesquisar = new JLabel("Pesquisar");
+		GridBagConstraints gbc_lblPesquisar = new GridBagConstraints();
+		gbc_lblPesquisar.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPesquisar.anchor = GridBagConstraints.EAST;
+		gbc_lblPesquisar.gridx = 0;
+		gbc_lblPesquisar.gridy = 4;
+		panel.add(lblPesquisar, gbc_lblPesquisar);
+		
+		txtPesquisar = new JTextField();
+		GridBagConstraints gbc_txtPesquisar = new GridBagConstraints();
+		gbc_txtPesquisar.gridwidth = 2;
+		gbc_txtPesquisar.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPesquisar.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPesquisar.gridx = 1;
+		gbc_txtPesquisar.gridy = 4;
+		panel.add(txtPesquisar, gbc_txtPesquisar);
+		txtPesquisar.setColumns(10);
+		
 		btnPesquisar = new JButton("Pesquisar");
+		btnPesquisar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				consultarArquivo();
+			}
+		});
 		btnPesquisar.setIcon(new ImageIcon("src/br/univel/img/search.png"));
 		GridBagConstraints gbc_btnPesquisar = new GridBagConstraints();
+		gbc_btnPesquisar.gridwidth = 2;
 		gbc_btnPesquisar.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnPesquisar.insets = new Insets(0, 0, 5, 5);
-		gbc_btnPesquisar.gridx = 1;
-		gbc_btnPesquisar.gridy = 5;
+		gbc_btnPesquisar.gridx = 3;
+		gbc_btnPesquisar.gridy = 4;
 		panel.add(btnPesquisar, gbc_btnPesquisar);
 		btnPesquisar.setEnabled(false);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
+		gbc_scrollPane.gridheight = 2;
+		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
+		gbc_scrollPane.gridwidth = 8;
+		gbc_scrollPane.fill = GridBagConstraints.BOTH;
+		gbc_scrollPane.gridx = 0;
+		gbc_scrollPane.gridy = 5;
+		panel.add(scrollPane, gbc_scrollPane);
+		
+		tableArquivos = new JTable();
+		scrollPane.setViewportView(tableArquivos);
 		
 		btnDownload = new JButton("Download");
 		btnDownload.setIcon(new ImageIcon("src/br/univel/img/download.png"));
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnDownload.insets = new Insets(0, 0, 5, 5);
+		gbc_btnDownload.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDownload.gridx = 3;
-		gbc_btnDownload.gridy = 5;
+		gbc_btnDownload.gridy = 7;
 		panel.add(btnDownload, gbc_btnDownload);
 		btnDownload.setEnabled(false);
 		
-		JScrollPane scrollPane = new JScrollPane();
-		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
-		gbc_scrollPane.gridwidth = 8;
-		gbc_scrollPane.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane.gridx = 0;
-		gbc_scrollPane.gridy = 6;
-		panel.add(scrollPane, gbc_scrollPane);
 		
-		tableArquivos = new JTable();
-		scrollPane.setViewportView(tableArquivos);
+	}
+
+	protected void consultarArquivo() {
+		
 	}
 
 	protected void desconectar() {
@@ -231,9 +265,11 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			registry = LocateRegistry.getRegistry(ip, intPorta);
 			servidor = (IServer) registry.lookup(NOME_SERVICO);
 			cliente = new Cliente(nomeCliente, ip, intPorta);
-			cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
+			//cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
 			
 			servidor.registrarCliente(cliente);
+			
+			//criar minhas listas de arquivo
 
 			//fazer publicar lista de arquivos ao conectar
 			
@@ -265,13 +301,60 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
 		
+		File dirStart = new File(".\\");
+
+		List<Arquivo> listaArquivos = new ArrayList<>();
+		//List<Diretorio> listaDiretorios = new ArrayList<>();
+		for (File file : dirStart.listFiles()) {
+			if (file.isFile()) {
+				Arquivo arq = new Arquivo();
+				arq.setNome(file.getName());
+				arq.setTamanho(file.length());
+				listaArquivos.add(arq);
+			}
+			
+			/*else {
+				Diretorio dir = new Diretorio();
+				dir.setNome(file.getName());
+				listaDiretorios.add(dir);				
+			}*/
+		}
+		
+		/*
+		System.out.println("Diretórios");
+		for (Diretorio dir : listaDiretorios) {
+			System.out.println("\t" + dir.getNome());
+		}
+		
+		
+		System.out.println("Arquivos");
+		for (Arquivo arq : listaArquivos) {
+			System.out.println("\t" + arq.getTamanho() + "\t" + arq.getNome());
+		}
+		*/
 		
 	}
 
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
 			throws RemoteException {
-		// TODO Auto-generated method stub
+		
+		String pesquisa = txtPesquisar.getText();
+		
+		if (pesquisa.isEmpty()){
+			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
+		}
+		
+		try {
+			procurarArquivo(pesquisa);
+		} catch (RemoteException e) {
+			System.err.println("Erro ao pesquisar arquivo!");
+			e.printStackTrace();
+		}
+		
+	    //procura arquivo no servidor
+		servidor.procurarArquivo(nome);
+
 		return null;
 	}
 
@@ -286,7 +369,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 		if (servidor != null){
 			servidor.desconectar(c);
-			UnicastRemoteObject.unexportObject(this, true);
+			//UnicastRemoteObject.unexportObject(this, true);
 			servidor = null;
 		}
 		
