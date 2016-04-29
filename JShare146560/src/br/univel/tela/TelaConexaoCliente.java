@@ -266,7 +266,22 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	}
 
 	protected void consultarArquivo() {
+
+		String pesquisa = txtPesquisar.getText();
 		
+		if (pesquisa.isEmpty()){
+			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
+		}
+		
+	    //procura arquivo no servidor
+		System.out.println("procura arquivo");
+		
+		try {
+			servidor.procurarArquivo(pesquisa);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	protected void desconectar() {
@@ -376,22 +391,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
 			throws RemoteException {
-		
-		String pesquisa = txtPesquisar.getText();
-		
-		if (pesquisa.isEmpty()){
-			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
-		}
-		
-		try {
-			procurarArquivo(pesquisa);
-		} catch (RemoteException e) {
-			System.err.println("Erro ao pesquisar arquivo!");
-			e.printStackTrace();
-		}
-		
-	    //procura arquivo no servidor
-		servidor.procurarArquivo(nome);
 
 		return null;
 	}

@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.KeyStore.Entry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +48,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	private JButton btnConectar;
 	private JTextArea textArea;
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
+	private HashMap<Cliente, List<Arquivo>> arquivosServidor;
 
 	/**
 	 * Launch the application.
@@ -239,8 +241,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
 		
-		//Adicionando CLIENTE e a LISTA DE ARQUIVOS no servidor
-		HashMap<Cliente, List<Arquivo>> arquivosServidor = new HashMap<>();
+		arquivosServidor = new HashMap<>();
 		arquivosServidor.put(c, lista);
 		
 		for (int i = 0; i < lista.size(); i++) {
@@ -254,8 +255,41 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	@Override
 	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
 			throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		
+		HashMap<Cliente, List<Arquivo>> resultado = new HashMap<>();
+		List<Arquivo> arquivosCliente = new ArrayList<>();
+		
+		System.out.println("entrou aqui");
+
+		for(Map.Entry<Cliente, List<Arquivo>> lista : arquivosServidor.entrySet()) {
+			System.out.println("aqui");
+			
+
+			
+			for(Arquivo arquivo: arquivosServidor.get(lista.getKey())){
+				
+				if (arquivo.getNome().contains(nome)){
+					//System.out.println(arquivo.getNome());
+					//System.out.println(arquivo.getTamanho());			
+					arquivosCliente.add(arquivo);
+				}
+			}
+			
+			if (!arquivosCliente.isEmpty()){
+				Cliente c = new Cliente(lista.getKey().getNome(), 
+						lista.getKey().getIp(), 
+						lista.getKey().getPorta());
+				
+				System.out.println(c.getNome());
+				for (Arquivo ar : arquivosCliente) {
+					System.out.println(ar.getNome());
+				}
+				
+				resultado.put(c, arquivosCliente);
+			}
+		}
+		
+		return resultado;
 	}
 
 	@Override
