@@ -31,6 +31,8 @@ import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
+import br.dagostini.jshare.comum.pojos.Diretorio;
+import br.dagostini.jshare.comum.pojos.ListarDiretoriosArquivos;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
 
@@ -38,8 +40,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	private JPanel contentPane;
 	private JTextField txtNome;
-	private JTextField txtIP;
-	private JTextField txtPorta;
+	private JTextField txtIPServidor;
+	private JTextField txtPortaServidor;
 	private JTable tableArquivos;
 	private Registry registry;
 	private IServer servidor;
@@ -50,6 +52,10 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	private JButton btnDownload;
 	private JTextField txtPesquisar;
 	private JLabel lblPesquisar;
+	private JLabel lblIpCliente;
+	private JTextField txtIPCliente;
+	private JLabel lblPortaCliente;
+	private JTextField txtPortaCliente;
 
 	/**
 	 * Launch the application.
@@ -106,7 +112,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		GridBagLayout gbl_panel = new GridBagLayout();
 		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
@@ -119,6 +125,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(lblNome, gbc_lblNome);
 		
 		txtNome = new JTextField();
+		txtNome.setText("thais");
 		GridBagConstraints gbc_txtNome = new GridBagConstraints();
 		gbc_txtNome.gridwidth = 3;
 		gbc_txtNome.insets = new Insets(0, 0, 5, 5);
@@ -128,7 +135,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(txtNome, gbc_txtNome);
 		txtNome.setColumns(10);
 		
-		JLabel lblIp = new JLabel("IP");
+		JLabel lblIp = new JLabel("IP Servidor");
 		GridBagConstraints gbc_lblIp = new GridBagConstraints();
 		gbc_lblIp.anchor = GridBagConstraints.EAST;
 		gbc_lblIp.insets = new Insets(0, 0, 5, 5);
@@ -136,32 +143,67 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		gbc_lblIp.gridy = 2;
 		panel.add(lblIp, gbc_lblIp);
 		
-		txtIP = new JTextField();
-		GridBagConstraints gbc_txtIP = new GridBagConstraints();
-		gbc_txtIP.insets = new Insets(0, 0, 5, 5);
-		gbc_txtIP.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtIP.gridx = 1;
-		gbc_txtIP.gridy = 2;
-		panel.add(txtIP, gbc_txtIP);
-		txtIP.setColumns(10);
+		txtIPServidor = new JTextField();
+		txtIPServidor.setText("127.0.0.1");
+		GridBagConstraints gbc_txtIPServidor = new GridBagConstraints();
+		gbc_txtIPServidor.insets = new Insets(0, 0, 5, 5);
+		gbc_txtIPServidor.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtIPServidor.gridx = 1;
+		gbc_txtIPServidor.gridy = 2;
+		panel.add(txtIPServidor, gbc_txtIPServidor);
+		txtIPServidor.setColumns(10);
 		
-		JLabel lblPorta = new JLabel("Porta");
+		JLabel lblPorta = new JLabel("Porta Servidor");
 		GridBagConstraints gbc_lblPorta = new GridBagConstraints();
 		gbc_lblPorta.anchor = GridBagConstraints.EAST;
 		gbc_lblPorta.insets = new Insets(0, 0, 5, 5);
-		gbc_lblPorta.gridx = 0;
-		gbc_lblPorta.gridy = 3;
+		gbc_lblPorta.gridx = 2;
+		gbc_lblPorta.gridy = 2;
 		panel.add(lblPorta, gbc_lblPorta);
 		
-		txtPorta = new JTextField();
-		txtPorta.setText("1818");
-		GridBagConstraints gbc_txtPorta = new GridBagConstraints();
-		gbc_txtPorta.insets = new Insets(0, 0, 5, 5);
-		gbc_txtPorta.fill = GridBagConstraints.HORIZONTAL;
-		gbc_txtPorta.gridx = 1;
-		gbc_txtPorta.gridy = 3;
-		panel.add(txtPorta, gbc_txtPorta);
-		txtPorta.setColumns(10);
+		txtPortaServidor = new JTextField();
+		txtPortaServidor.setText("1818");
+		GridBagConstraints gbc_txtPortaServidor = new GridBagConstraints();
+		gbc_txtPortaServidor.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPortaServidor.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPortaServidor.gridx = 3;
+		gbc_txtPortaServidor.gridy = 2;
+		panel.add(txtPortaServidor, gbc_txtPortaServidor);
+		txtPortaServidor.setColumns(10);
+		
+		lblIpCliente = new JLabel("IP Cliente");
+		GridBagConstraints gbc_lblIpCliente = new GridBagConstraints();
+		gbc_lblIpCliente.anchor = GridBagConstraints.EAST;
+		gbc_lblIpCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_lblIpCliente.gridx = 0;
+		gbc_lblIpCliente.gridy = 3;
+		panel.add(lblIpCliente, gbc_lblIpCliente);
+		
+		txtIPCliente = new JTextField();
+		txtIPCliente.setColumns(10);
+		GridBagConstraints gbc_txtIPCliente = new GridBagConstraints();
+		gbc_txtIPCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_txtIPCliente.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtIPCliente.gridx = 1;
+		gbc_txtIPCliente.gridy = 3;
+		panel.add(txtIPCliente, gbc_txtIPCliente);
+		
+		lblPortaCliente = new JLabel("Porta Cliente");
+		GridBagConstraints gbc_lblPortaCliente = new GridBagConstraints();
+		gbc_lblPortaCliente.anchor = GridBagConstraints.EAST;
+		gbc_lblPortaCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_lblPortaCliente.gridx = 2;
+		gbc_lblPortaCliente.gridy = 3;
+		panel.add(lblPortaCliente, gbc_lblPortaCliente);
+		
+		txtPortaCliente = new JTextField();
+		txtPortaCliente.setColumns(10);
+		GridBagConstraints gbc_txtPortaCliente = new GridBagConstraints();
+		gbc_txtPortaCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPortaCliente.fill = GridBagConstraints.HORIZONTAL;
+		gbc_txtPortaCliente.gridx = 3;
+		gbc_txtPortaCliente.gridy = 3;
+		panel.add(txtPortaCliente, gbc_txtPortaCliente);
 		
 		lblPesquisar = new JLabel("Pesquisar");
 		GridBagConstraints gbc_lblPesquisar = new GridBagConstraints();
@@ -245,17 +287,17 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			return;
 		}
 		
-		String ip = txtIP.getText().trim();
+		String ip = txtIPServidor.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
 			JOptionPane.showMessageDialog(this, "Digite um endere�o de IP v�lido!");
-			txtIP.requestFocus();
+			txtIPServidor.requestFocus();
 			return;
 		}
 		
-		String porta = txtPorta.getText().trim();
+		String porta = txtPortaServidor.getText().trim();
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
 			JOptionPane.showMessageDialog(this, "A porta deve ser um valor num�rico de no m�ximo 5 d�gitos!");
-			txtPorta.requestFocus();
+			txtPortaServidor.requestFocus();
 			return;
 		}
 		
@@ -269,16 +311,15 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			
 			servidor.registrarCliente(cliente);
 			
-			//criar minhas listas de arquivo
+			//publica lista de arquivos ao conectar
+			servidor.publicarListaArquivos(cliente, criarListaCliente());
 
-			//fazer publicar lista de arquivos ao conectar
-			
 			btnDesconectar.setEnabled(true);
 			btnPesquisar.setEnabled(true);
 			btnDownload.setEnabled(true);
 			txtNome.setEnabled(false);
-			txtIP.setEnabled(false);
-			txtPorta.setEnabled(false);
+			txtIPServidor.setEnabled(false);
+			txtPortaServidor.setEnabled(false);
 			btnConectar.setEnabled(false);
 			
 			
@@ -291,6 +332,35 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 	}
 
+
+	private List<Arquivo> criarListaCliente() {
+		
+		//Cria lista de arquivos que estão na pasta JShare
+		File dirStart = new File("C:/JShare/Uploads");
+
+		List<Arquivo> listaArquivos = new ArrayList<>();
+		List<Diretorio> listaDiretorios = new ArrayList<>();
+		
+		for (File file : dirStart.listFiles()) {
+			if (file.isFile()) {
+				System.out.println("entrou aqui");
+				Arquivo arq = new Arquivo();
+				arq.setNome(file.getName());
+				System.out.println(file.getName());
+				arq.setTamanho(file.length());
+				listaArquivos.add(arq);
+			} else {
+				Diretorio dir = new Diretorio();
+				dir.setNome(file.getName());
+				listaDiretorios.add(dir);				
+			}
+		}
+		
+		
+		return listaArquivos;
+		
+	}
+
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -300,38 +370,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	@Override
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
-		
-		File dirStart = new File(".\\");
-
-		List<Arquivo> listaArquivos = new ArrayList<>();
-		//List<Diretorio> listaDiretorios = new ArrayList<>();
-		for (File file : dirStart.listFiles()) {
-			if (file.isFile()) {
-				Arquivo arq = new Arquivo();
-				arq.setNome(file.getName());
-				arq.setTamanho(file.length());
-				listaArquivos.add(arq);
-			}
-			
-			/*else {
-				Diretorio dir = new Diretorio();
-				dir.setNome(file.getName());
-				listaDiretorios.add(dir);				
-			}*/
-		}
-		
-		/*
-		System.out.println("Diretórios");
-		for (Diretorio dir : listaDiretorios) {
-			System.out.println("\t" + dir.getNome());
-		}
-		
-		
-		System.out.println("Arquivos");
-		for (Arquivo arq : listaArquivos) {
-			System.out.println("\t" + arq.getTamanho() + "\t" + arq.getNome());
-		}
-		*/
 		
 	}
 
@@ -376,7 +414,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		btnDesconectar.setEnabled(false);
 		btnConectar.setEnabled(true);
 		txtNome.setEnabled(true);
-		txtIP.setEnabled(true);
-		txtPorta.setEnabled(true);
+		txtIPServidor.setEnabled(true);
+		txtPortaServidor.setEnabled(true);
 	}
 }

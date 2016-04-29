@@ -14,7 +14,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -112,6 +114,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		panel.add(lblIp, gbc_lblIp);
 		
 		txtIP = new JTextField();
+		txtIP.setText("127.0.0.1");
 		GridBagConstraints gbc_txtIP = new GridBagConstraints();
 		gbc_txtIP.insets = new Insets(0, 0, 5, 0);
 		gbc_txtIP.fill = GridBagConstraints.HORIZONTAL;
@@ -228,14 +231,23 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
 		
-		imprimir(c.getNome());
+		imprimir(c.getNome() + " registrado como cliente.");
 		
 	}
 
 	@Override
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
-		// TODO Auto-generated method stub
+		
+		//Adicionando CLIENTE e a LISTA DE ARQUIVOS no servidor
+		HashMap<Cliente, List<Arquivo>> arquivosServidor = new HashMap<>();
+		arquivosServidor.put(c, lista);
+		
+		for (int i = 0; i < lista.size(); i++) {
+			System.out.println(lista.get(i).getNome() + lista.get(i).getTamanho());
+		}
+		
+		imprimir(c.getNome() + " publicou lista de arquivos.");
 		
 	}
 
@@ -254,7 +266,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
-		imprimir(c.getNome()+"saiu");
+		imprimir(c.getNome()+" saiu.");
 		
 	}
 
