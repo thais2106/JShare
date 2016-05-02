@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -269,7 +270,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	protected void consultarArquivo() {
 
 		String pesquisa = txtPesquisar.getText();
-		Map<Cliente, List<Arquivo>> arquivosPesquisados = new Map<Cliente, List<Arquivo>>;
+		Map<Cliente, List<Arquivo>> arquivosPesquisados = new HashMap<>();
 		
 		if (pesquisa.isEmpty()){
 			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
