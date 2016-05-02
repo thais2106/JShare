@@ -264,11 +264,11 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		for(Map.Entry<Cliente, List<Arquivo>> lista : arquivosServidor.entrySet()) {
 			System.out.println("aqui");
 			
-
-			
 			for(Arquivo arquivo: arquivosServidor.get(lista.getKey())){
 				
-				if (arquivo.getNome().contains(nome)){
+				//Procura os arquivos que contém a String procurada. Tanto maiúsculas, quando minúsculas
+				if (arquivo.getNome().contains(nome.toLowerCase()) || 
+						arquivo.getNome().contains(nome.toUpperCase())) {
 					//System.out.println(arquivo.getNome());
 					//System.out.println(arquivo.getTamanho());			
 					arquivosCliente.add(arquivo);
@@ -289,7 +289,20 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			}
 		}
 		
+		testar(resultado);
 		return resultado;
+	}
+
+	private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
+		
+		System.out.println("TESTE AQUIIII");
+		for(Map.Entry<Cliente, List<Arquivo>> lista : resultado.entrySet()) {
+			System.out.println(lista.getKey().getNome());
+
+			for(Arquivo arquivo: resultado.get(lista.getKey())){
+				System.out.println(arquivo.getNome());	
+			}
+		}
 	}
 
 	@Override

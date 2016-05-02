@@ -56,6 +56,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	private JTextField txtIPCliente;
 	private JLabel lblPortaCliente;
 	private JTextField txtPortaCliente;
+	private ModelArquivo modelArquivo;
 
 	/**
 	 * Launch the application.
@@ -268,16 +269,25 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	protected void consultarArquivo() {
 
 		String pesquisa = txtPesquisar.getText();
+		Map<Cliente, List<Arquivo>> arquivosPesquisados = new Map<Cliente, List<Arquivo>>;
 		
 		if (pesquisa.isEmpty()){
 			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
+			return;
 		}
 		
-	    //procura arquivo no servidor
-		System.out.println("procura arquivo");
-		
+	    //Procura arquivo no servidor
 		try {
-			servidor.procurarArquivo(pesquisa);
+			arquivosPesquisados = servidor.procurarArquivo(pesquisa);
+			
+			if (arquivosPesquisados.isEmpty()){
+				JOptionPane.showMessageDialog(this, "Não foram encontrados arquivos no servidor!");
+				return;
+			} else {
+				modelArquivo = new ModelArquivo(arquivosPesquisados);
+				tableArquivos.setModel(modelArquivo);
+			}
+			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -370,7 +380,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 				listaDiretorios.add(dir);				
 			}
 		}
-		
 		
 		return listaArquivos;
 		
