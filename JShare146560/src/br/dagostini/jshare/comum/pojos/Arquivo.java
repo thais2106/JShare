@@ -8,6 +8,15 @@ public class Arquivo implements Serializable {
 	
 	private String nome;
 	private long tamanho;
+	
+	public Arquivo() {
+	
+	}
+	
+	public Arquivo(String nome, long tamanho){
+		this.nome = nome;
+		this.tamanho = tamanho;
+	}
 
 	public String getNome() {
 		return nome;

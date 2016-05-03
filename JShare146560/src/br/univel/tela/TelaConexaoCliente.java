@@ -322,17 +322,12 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		String pesquisa = txtPesquisar.getText();
 		Map<Cliente, List<Arquivo>> arquivosPesquisados = new HashMap<>();
 		
-		if (pesquisa.isEmpty()){
-			JOptionPane.showMessageDialog(this, "Campo de pesquisa em branco!");
-			return;
-		}
-		
 	    //Procura arquivo no servidor
 		try {
 			arquivosPesquisados = servidor.procurarArquivo(pesquisa);
 			
 			if (arquivosPesquisados.isEmpty()){
-				JOptionPane.showMessageDialog(this, "N√£o foram encontrados arquivos no servidor!");
+				JOptionPane.showMessageDialog(this, "Nao foram encontrados arquivos no servidor!");
 				return;
 			} else {
 				modelArquivo = new ModelArquivo(arquivosPesquisados);
@@ -410,29 +405,27 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	private List<Arquivo> criarListaCliente() {
 		
-		//Cria lista de arquivos que est√£o na pasta JShare
-		File dirStart = new File("C:/JShare/Uploads");
+		//Cria lista de arquivos que estao na pasta JShare		
+		File dirUpload = new File("C:/JShare/Uploads");
 
+		//Se n„o existir uma pasta de Upload, ent„o ele cria.
+		if (!dirUpload.exists())
+			dirUpload.mkdirs();
+		
 		List<Arquivo> listaArquivos = new ArrayList<>();
 		List<Diretorio> listaDiretorios = new ArrayList<>();
 		
-		for (File file : dirStart.listFiles()) {
+		for (File file : dirUpload.listFiles()) {
 			if (file.isFile()) {
-				System.out.println("entrou aqui");
-				Arquivo arq = new Arquivo();
-				arq.setNome(file.getName());
-				System.out.println(file.getName());
-				arq.setTamanho(file.length());
+				Arquivo arq = new Arquivo(file.getName(), file.length());
 				listaArquivos.add(arq);
 			} else {
-				Diretorio dir = new Diretorio();
-				dir.setNome(file.getName());
+				Diretorio dir = new Diretorio(file.getName());
 				listaDiretorios.add(dir);				
 			}
 		}
 		
 		return listaArquivos;
-		
 	}
 
 	@Override
