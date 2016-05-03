@@ -7,9 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-public class LeituraEscritaDeArquivos {
+public class ReadWriteFile {
+	
+	public ReadWriteFile() {
+		// TODO Auto-generated constructor stub
+	}
 
-	public LeituraEscritaDeArquivos(File f) {
+	public ReadWriteFile(File f) {
 
 		// 2 - Ao receber um parâmetro f lê seu conteúdo e o coloca na memória.
 		// Todo o conteúdo do arquivo se encontra no array de bytes agora.
@@ -42,7 +46,7 @@ public class LeituraEscritaDeArquivos {
 	public static void main(String[] args) {
 
 		// 1 - Instancia um objeto da classe LerArquivo.
-		new LeituraEscritaDeArquivos(new File("logo.png"));
+		new ReadWriteFile(new File("logo.png"));
 	}
 
 }

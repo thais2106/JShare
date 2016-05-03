@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,7 +19,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,17 +34,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 import javax.swing.border.EmptyBorder;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
 import br.dagostini.jshare.comum.pojos.Diretorio;
 import br.dagostini.jshare.comum.pojos.ReadWriteFile;
-import br.dagostini.jshare.comum.pojos.ListarDiretoriosArquivos;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class TelaConexaoCliente extends JFrame implements IServer{
 
@@ -294,9 +291,15 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNome(nomeArquivo);
 		
+		instanciarNovoServidor(IP, porta, arquivo);
+	}
+	
+	private void instanciarNovoServidor(String ip, int porta, Arquivo arquivo) {
+		System.out.println("novo servidor");
+		ReadWriteFile rwf = new ReadWriteFile();
+		
 		try {
-			System.out.println("novo servidor");
-			registry = LocateRegistry.getRegistry(IP, porta);
+			registry = LocateRegistry.getRegistry(ip, porta);
 			IServer clienteServidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
 			
 			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
@@ -312,9 +315,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			e.printStackTrace();
 		}
 		
-		
 	}
-	
+
 	protected void consultarArquivo() {
 
 		String pesquisa = txtPesquisar.getText();
