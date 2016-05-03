@@ -28,7 +28,7 @@ public class ModelArquivo extends AbstractTableModel {
 		
 		linhas = 0;
 		
-		//Percorre a lista e incrementa na variavel linhas o tamanho da lista de arquivos
+		//Percorre a lista e incrementa na variavel linhas o tamanho da lista
 		for (Entry<Cliente, List<Arquivo>> e : listaArquivos.entrySet())
 			linhas += e.getValue().size();
 		
@@ -51,6 +51,7 @@ public class ModelArquivo extends AbstractTableModel {
 
 	}
 	
+
 	@Override
 	public int getColumnCount() {
 		return 5;

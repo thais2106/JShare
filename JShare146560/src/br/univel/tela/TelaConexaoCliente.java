@@ -8,6 +8,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -33,9 +38,12 @@ import javax.swing.border.EmptyBorder;
 
 import br.dagostini.jshare.comum.pojos.Arquivo;
 import br.dagostini.jshare.comum.pojos.Diretorio;
+import br.dagostini.jshare.comum.pojos.ReadWriteFile;
 import br.dagostini.jshare.comum.pojos.ListarDiretoriosArquivos;
 import br.dagostini.jshare.comun.Cliente;
 import br.dagostini.jshare.comun.IServer;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class TelaConexaoCliente extends JFrame implements IServer{
 
@@ -242,6 +250,13 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		btnPesquisar.setEnabled(false);
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				if (evt.getClickCount()==2)
+					capturarArquivo();
+			}
+		});
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridheight = 2;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
@@ -255,6 +270,11 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		scrollPane.setViewportView(tableArquivos);
 		
 		btnDownload = new JButton("Download");
+		btnDownload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				capturarArquivo();
+			}
+		});
 		btnDownload.setIcon(new ImageIcon("src/br/univel/img/download.png"));
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
@@ -263,10 +283,38 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		gbc_btnDownload.gridy = 7;
 		panel.add(btnDownload, gbc_btnDownload);
 		btnDownload.setEnabled(false);
+	}
+
+	protected void capturarArquivo() {
+		System.out.println("capturando arquivo");
+		String nomeArquivo = (String) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 0);
+		String IP = (String) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 3);
+		int porta = (int) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 4);
+		
+		Arquivo arquivo = new Arquivo();
+		arquivo.setNome(nomeArquivo);
+		
+		try {
+			System.out.println("novo servidor");
+			registry = LocateRegistry.getRegistry(IP, porta);
+			IServer clienteServidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
+			
+			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
+			
+			System.out.println("baixando");
+			escreverArquivo(new File("C:\\JShare\\Downloads\\"+arquivo.getNome()), baixarArquivo);
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
-
+	
 	protected void consultarArquivo() {
 
 		String pesquisa = txtPesquisar.getText();
@@ -358,7 +406,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 	}
 
-
 	private List<Arquivo> criarListaCliente() {
 		
 		//Cria lista de arquivos que estão na pasta JShare
@@ -407,8 +454,39 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		System.out.println("dentro do metodo baixar arquivo");
+		List<Arquivo> arquivos = criarListaCliente();
+		byte[] dados = null;
+		
+		for (Arquivo arquivo : arquivos) {
+			if (arquivo.getNome().contains(arq.getNome())){
+				dados = lerArquivo(new File("C:\\JShare\\Uploads"+arq.getNome()));
+			}
+		}
+		return dados;
+	}
+
+	private byte[] lerArquivo(File file) {
+		byte[] dados;
+		
+		Path path = Paths.get(file.getPath());
+		try {
+			dados = Files.readAllBytes(path);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		
+		return dados;
+	}
+
+	private void escreverArquivo(File file, byte[] dados) {
+		try {
+			Files.write(Paths.get(file.getPath()), dados, StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
