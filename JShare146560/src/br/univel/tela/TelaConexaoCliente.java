@@ -188,6 +188,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(lblIpCliente, gbc_lblIpCliente);
 		
 		txtIPCliente = new JTextField();
+		txtIPCliente.setText("192.168.0.105");
 		txtIPCliente.setColumns(10);
 		GridBagConstraints gbc_txtIPCliente = new GridBagConstraints();
 		gbc_txtIPCliente.insets = new Insets(0, 0, 5, 5);
@@ -205,6 +206,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(lblPortaCliente, gbc_lblPortaCliente);
 		
 		txtPortaCliente = new JTextField();
+		txtPortaCliente.setText("1919");
 		txtPortaCliente.setColumns(10);
 		GridBagConstraints gbc_txtPortaCliente = new GridBagConstraints();
 		gbc_txtPortaCliente.insets = new Insets(0, 0, 5, 5);
@@ -285,16 +287,38 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	protected void capturarArquivo() {
 		System.out.println("capturando arquivo");
+		
+		//Captura o nome do arquivo, o IP e a Porta do cliente que o possui
 		String nomeArquivo = (String) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 0);
 		String IP = (String) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 3);
 		int porta = (int) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 4);
 		
+		//Crio um Arquivo
 		Arquivo arquivo = new Arquivo();
 		arquivo.setNome(nomeArquivo);
 		
-		instanciarNovoServidor(IP, porta, arquivo);
+		
+		try {
+			registry = LocateRegistry.getRegistry(IP, porta);
+			IServer clienteServidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
+			clienteServidor.registrarCliente(cliente);
+			
+			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
+			
+			System.out.println("baixarArquivo" + baixarArquivo);
+
+			escreverArquivo(new File("C:\\JShare\\Downloads\\"+arquivo.getNome()), baixarArquivo);	
+			
+		} catch (RemoteException e) {
+			System.err.println("Erro ao iniciar download do arquivo.");
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			System.err.println("Erro ao iniciar download do arquivo.");
+			e.printStackTrace();
+		}
 	}
 	
+	/*
 	private void instanciarNovoServidor(String ip, int porta, Arquivo arquivo) {
 		
 		try {
@@ -314,6 +338,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		}
 		
 	}
+	*/
 
 	protected void consultarArquivo() {
 
@@ -384,7 +409,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			servidor.publicarListaArquivos(cliente, criarListaCliente());
 
 			habilitarDesabilitarBotoes("conectar");
-			iniciarClienteServidor();
+			iniciarMeuServico();
 			
 		} catch (RemoteException e) {
 			// TODO: handle exception
@@ -395,7 +420,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 	}
 
-	private void iniciarClienteServidor() {
+	private void iniciarMeuServico() {
 		String ip = txtIPCliente.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
 			JOptionPane.showMessageDialog(this, "Digite um endereco de IP valido!");
@@ -413,9 +438,9 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		int intPorta = Integer.parseInt(porta);
 		
 		try {
-			IServer clienteServidor = (IServer) UnicastRemoteObject.exportObject(this, 0);
+			IServer meuServico = (IServer) UnicastRemoteObject.exportObject(this, 0);
 			registry = LocateRegistry.createRegistry(intPorta);
-			registry.rebind(IServer.NOME_SERVICO, clienteServidor);
+			registry.rebind(IServer.NOME_SERVICO, meuServico);
 		} catch (RemoteException e) {
 			JOptionPane.showMessageDialog(this, "Erro criando registro, verifique se a porta ja nao esta sendo usada.");
 			e.printStackTrace();
@@ -474,31 +499,37 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
 		System.out.println("dentro do metodo baixar arquivo");
 		List<Arquivo> arquivos = criarListaCliente();
-		byte[] dados = null;
+		//byte[] dados;
 		
 		for (Arquivo arquivo : arquivos) {
-			if (arquivo.getNome().contains(arq.getNome())){
-				dados = lerArquivo(new File("C:\\JShare\\Uploads"+arq.getNome()));
+			if (arquivo.getNome().contains(arq.getNome())){;
+				byte[] dados = lerArquivo(new File("C:\\JShare\\Uploads\\"+arq.getNome()));
+				
+				return dados;
 			}
 		}
-		return dados;
+		return null;
 	}
 
 	private byte[] lerArquivo(File file) {
-		byte[] dados;
+		
+		System.out.println("get path "+file.getPath());
 		
 		Path path = Paths.get(file.getPath());
+		System.out.println("path "+ path);
 		try {
-			dados = Files.readAllBytes(path);
+			byte[] dados = Files.readAllBytes(path);
+			System.out.println(dados);
+			return dados;
 		} catch (IOException e) {
 			System.err.println("Erro ao ler arquivo");
 			throw new RuntimeException(e);
 		}
-		
-		return dados;
 	}
 
 	private void escreverArquivo(File file, byte[] dados) {
+		System.out.println("path " + file.getPath());
+		System.out.println("dados "+ dados);
 		try {
 			Files.write(Paths.get(file.getPath()), dados, StandardOpenOption.CREATE);
 		} catch (IOException e) {
@@ -544,7 +575,5 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			txtIPServidor.setEnabled(true);
 			txtPortaServidor.setEnabled(true);
 		}
-			
-		
 	}
 }
