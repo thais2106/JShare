@@ -73,14 +73,14 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	public TelaConexaoServidor() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));
-		
+
 		btnConectar = new JButton("Conectar");
 		btnConectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -89,7 +89,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		});
 		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
 		menuBar.add(btnConectar);
-		
+
 		btnDesconectar = new JButton("Desconectar");
 		btnDesconectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -98,16 +98,16 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		});
 		btnDesconectar.setIcon(new ImageIcon("src/br/univel/img/disconnect.png"));
 		menuBar.add(btnDesconectar);
-		
+
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0};
-		gbl_panel.rowHeights = new int[]{0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
+		gbl_panel.columnWidths = new int[] { 0, 0, 0 };
+		gbl_panel.rowHeights = new int[] { 0, 0, 0, 0 };
+		gbl_panel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+		gbl_panel.rowWeights = new double[] { 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		panel.setLayout(gbl_panel);
-		
+
 		JLabel lblIp = new JLabel("IP");
 		GridBagConstraints gbc_lblIp = new GridBagConstraints();
 		gbc_lblIp.anchor = GridBagConstraints.EAST;
@@ -115,7 +115,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		gbc_lblIp.gridx = 0;
 		gbc_lblIp.gridy = 0;
 		panel.add(lblIp, gbc_lblIp);
-		
+
 		txtIP = new JTextField();
 		txtIP.setText("127.0.0.1");
 		GridBagConstraints gbc_txtIP = new GridBagConstraints();
@@ -125,7 +125,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		gbc_txtIP.gridy = 0;
 		panel.add(txtIP, gbc_txtIP);
 		txtIP.setColumns(10);
-		
+
 		JLabel lblPorta = new JLabel("Porta");
 		GridBagConstraints gbc_lblPorta = new GridBagConstraints();
 		gbc_lblPorta.anchor = GridBagConstraints.EAST;
@@ -133,7 +133,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		gbc_lblPorta.gridx = 0;
 		gbc_lblPorta.gridy = 1;
 		panel.add(lblPorta, gbc_lblPorta);
-		
+
 		txtPorta = new JTextField();
 		txtPorta.setText("1818");
 		GridBagConstraints gbc_txtPorta = new GridBagConstraints();
@@ -143,7 +143,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		gbc_txtPorta.gridy = 1;
 		panel.add(txtPorta, gbc_txtPorta);
 		txtPorta.setColumns(10);
-		
+
 		JScrollPane scrollPane = new JScrollPane();
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridwidth = 2;
@@ -151,12 +151,11 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 2;
 		panel.add(scrollPane, gbc_scrollPane);
-		
+
 		textArea = new JTextArea();
 		textArea.setBackground(Color.GRAY);
 		scrollPane.setViewportView(textArea);
 	}
-	
 
 	protected void pararServico() {
 		imprimir("Parando servi�o...");
@@ -177,25 +176,23 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			e.printStackTrace();
 		}
 
-		
 	}
 
 	protected void iniciarServico() {
-		
+
 		String ip = txtIP.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
 			JOptionPane.showMessageDialog(this, "Digite um endereco de IP v�lido!");
 			return;
 		}
-		
-		
+
 		String porta = txtPorta.getText().trim();
 
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
 			JOptionPane.showMessageDialog(this, "A porta deve ser um valor num�rico de no maximo 5 digitos!");
 			return;
 		}
-		
+
 		int intPorta = Integer.parseInt(porta);
 		if (intPorta < 1024 || intPorta > 65535) {
 			JOptionPane.showMessageDialog(this, "A porta deve estar entre 1024 e 65535");
@@ -236,71 +233,62 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	}
 
 	@Override
-	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
-			throws RemoteException {
-		
+	public void publicarListaArquivos(Cliente c, List<Arquivo> lista) throws RemoteException {
+
 		arquivosServidor.put(c, lista);
-		
+
 		for (int i = 0; i < lista.size(); i++) {
 			System.out.println(lista.get(i).getNome() + lista.get(i).getTamanho());
 		}
-		
+
 		imprimir(c.getNome() + " publicou lista de arquivos.");
-		
+
 	}
 
 	@Override
-	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome)
-			throws RemoteException {
-		
+	public Map<Cliente, List<Arquivo>> procurarArquivo(String nome) throws RemoteException {
+
 		HashMap<Cliente, List<Arquivo>> resultado = new HashMap<>();
 		List<Arquivo> arquivosCliente = new ArrayList<>();
-		
-		System.out.println("entrou aqui");
 
-		for(Map.Entry<Cliente, List<Arquivo>> lista : arquivosServidor.entrySet()) {
-			System.out.println("aqui");
-			
-			for(Arquivo arquivo: arquivosServidor.get(lista.getKey())){
-				
-				//Procura os arquivos que contém a String procurada. Tanto maiúsculas, quando minúsculas
-				if (arquivo.getNome().contains(nome.toLowerCase()) || 
-						arquivo.getNome().contains(nome.toUpperCase())) {
-					//System.out.println(arquivo.getNome());
-					//System.out.println(arquivo.getTamanho());			
+		for (Map.Entry<Cliente, List<Arquivo>> lista : arquivosServidor.entrySet()) {
+
+			for (Arquivo arquivo : arquivosServidor.get(lista.getKey())) {
+				arquivosCliente.clear();
+				// Procura os arquivos que contém a String procurada. Tanto
+				// maiúsculas, quando minúsculas
+				if (arquivo.getNome().contains(nome.toLowerCase()) || arquivo.getNome().contains(nome.toUpperCase())) {
+					// System.out.println(arquivo.getNome());
+					// System.out.println(arquivo.getTamanho());
 					arquivosCliente.add(arquivo);
 				}
-			}
-			
-			if (!arquivosCliente.isEmpty()){
-				Cliente c = new Cliente(lista.getKey().getNome(), 
-						lista.getKey().getIp(), 
-						lista.getKey().getPorta());
-				
-				System.out.println(c.getNome());
-				for (Arquivo ar : arquivosCliente) {
-					System.out.println(ar.getNome());
+
+				if (!arquivosCliente.isEmpty()) {
+					Cliente c = new Cliente(lista.getKey().getNome(), lista.getKey().getIp(),
+							lista.getKey().getPorta());
+
+					for (Arquivo ar : arquivosCliente) {
+						System.out.println(ar.getNome());
+					}
+
+					resultado.put(c, arquivosCliente);
 				}
-				
-				resultado.put(c, arquivosCliente);
 			}
 		}
-		
-		//testar(resultado);
+
+		// testar(resultado);
 		return resultado;
 	}
-	/*
-	private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
-		
-		System.out.println("TESTE AQUIIII");
-		for(Map.Entry<Cliente, List<Arquivo>> lista : resultado.entrySet()) {
-			System.out.println(lista.getKey().getNome());
 
-			for(Arquivo arquivo: resultado.get(lista.getKey())){
-				System.out.println(arquivo.getNome());	
-			}
-		}
-	}
+	/*
+	 * private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
+	 * 
+	 * System.out.println("TESTE AQUIIII"); for(Map.Entry<Cliente,
+	 * List<Arquivo>> lista : resultado.entrySet()) {
+	 * System.out.println(lista.getKey().getNome());
+	 * 
+	 * for(Arquivo arquivo: resultado.get(lista.getKey())){
+	 * System.out.println(arquivo.getNome()); } } }
 	 */
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
@@ -311,13 +299,13 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
 		clientesServidor.remove(c);
-		imprimir(c.getNome()+" saiu.");
+		imprimir(c.getNome() + " saiu.");
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
