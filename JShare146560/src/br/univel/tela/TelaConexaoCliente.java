@@ -118,9 +118,9 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
 		GridBagLayout gbl_panel = new GridBagLayout();
-		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
+		gbl_panel.columnWidths = new int[]{0, 0, 0, 0, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.columnWeights = new double[]{0.0, 1.0, 0.0, 1.0, Double.MIN_VALUE};
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
@@ -136,7 +136,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		txtNome.setText("thais");
 		GridBagConstraints gbc_txtNome = new GridBagConstraints();
 		gbc_txtNome.gridwidth = 3;
-		gbc_txtNome.insets = new Insets(0, 0, 5, 5);
+		gbc_txtNome.insets = new Insets(0, 0, 5, 0);
 		gbc_txtNome.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtNome.gridx = 1;
 		gbc_txtNome.gridy = 1;
@@ -172,7 +172,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		txtPortaServidor = new JTextField();
 		txtPortaServidor.setText("1818");
 		GridBagConstraints gbc_txtPortaServidor = new GridBagConstraints();
-		gbc_txtPortaServidor.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPortaServidor.insets = new Insets(0, 0, 5, 0);
 		gbc_txtPortaServidor.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtPortaServidor.gridx = 3;
 		gbc_txtPortaServidor.gridy = 2;
@@ -188,7 +188,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		panel.add(lblIpCliente, gbc_lblIpCliente);
 		
 		txtIPCliente = new JTextField();
-		txtIPCliente.setText("192.168.0.105");
 		txtIPCliente.setColumns(10);
 		GridBagConstraints gbc_txtIPCliente = new GridBagConstraints();
 		gbc_txtIPCliente.insets = new Insets(0, 0, 5, 5);
@@ -209,7 +208,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		txtPortaCliente.setText("1919");
 		txtPortaCliente.setColumns(10);
 		GridBagConstraints gbc_txtPortaCliente = new GridBagConstraints();
-		gbc_txtPortaCliente.insets = new Insets(0, 0, 5, 5);
+		gbc_txtPortaCliente.insets = new Insets(0, 0, 5, 0);
 		gbc_txtPortaCliente.fill = GridBagConstraints.HORIZONTAL;
 		gbc_txtPortaCliente.gridx = 3;
 		gbc_txtPortaCliente.gridy = 3;
@@ -241,9 +240,8 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		});
 		btnPesquisar.setIcon(new ImageIcon("src/br/univel/img/search.png"));
 		GridBagConstraints gbc_btnPesquisar = new GridBagConstraints();
-		gbc_btnPesquisar.gridwidth = 2;
 		gbc_btnPesquisar.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnPesquisar.insets = new Insets(0, 0, 5, 5);
+		gbc_btnPesquisar.insets = new Insets(0, 0, 5, 0);
 		gbc_btnPesquisar.gridx = 3;
 		gbc_btnPesquisar.gridy = 4;
 		panel.add(btnPesquisar, gbc_btnPesquisar);
@@ -260,7 +258,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		GridBagConstraints gbc_scrollPane = new GridBagConstraints();
 		gbc_scrollPane.gridheight = 2;
 		gbc_scrollPane.insets = new Insets(0, 0, 5, 0);
-		gbc_scrollPane.gridwidth = 8;
+		gbc_scrollPane.gridwidth = 4;
 		gbc_scrollPane.fill = GridBagConstraints.BOTH;
 		gbc_scrollPane.gridx = 0;
 		gbc_scrollPane.gridy = 5;
@@ -278,7 +276,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		btnDownload.setIcon(new ImageIcon("src/br/univel/img/download.png"));
 		GridBagConstraints gbc_btnDownload = new GridBagConstraints();
 		gbc_btnDownload.fill = GridBagConstraints.HORIZONTAL;
-		gbc_btnDownload.insets = new Insets(0, 0, 0, 5);
 		gbc_btnDownload.gridx = 3;
 		gbc_btnDownload.gridy = 7;
 		panel.add(btnDownload, gbc_btnDownload);
@@ -417,9 +414,9 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			iniciarMeuServico();
 			
 		} catch (RemoteException e) {
-			System.err.println("Erro ao iniciar seviço");
+			System.err.println("Erro ao iniciar seviï¿½o");
 		} catch (NotBoundException e) {
-			System.err.println("Erro ao iniciar seviço");
+			System.err.println("Erro ao iniciar seviï¿½o");
 			e.printStackTrace();
 		}
 		
@@ -452,7 +449,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		File dirUpload = new File("C:/JShare/Uploads");
 		File dirDownload = new File("C:JShare/Downloads");
 
-		//Se não existir uma pasta de Upload, então ele cria.
+		//Se nï¿½o existir uma pasta de Upload, entï¿½o ele cria.
 		if (!dirUpload.exists())
 			dirUpload.mkdirs();
 		if (!dirDownload.exists())
@@ -552,7 +549,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	private void habilitarDesabilitarBotoes(String acao) {
 		if (acao.equals("conectar")){
-			//Botões
+			//Botoes
 			btnDesconectar.setEnabled(true);
 			btnPesquisar.setEnabled(true);
 			btnDownload.setEnabled(true);
@@ -562,10 +559,12 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			txtNome.setEnabled(false);
 			txtIPServidor.setEnabled(false);
 			txtPortaServidor.setEnabled(false);
+			txtIPCliente.setEnabled(false);
+			txtPortaCliente.setEnabled(false);
 		}
 		
 		if (acao.equals("desconectar")){
-			//Botões
+			//Botoes
 			btnDesconectar.setEnabled(false);
 			btnConectar.setEnabled(true);
 			
