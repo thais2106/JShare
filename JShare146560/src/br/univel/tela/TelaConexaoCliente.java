@@ -19,6 +19,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,7 +98,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		btnConectar = new JButton("Conectar");
 		btnConectar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				conectar();
+				conectarServidor();
 			}
 		});
 		btnConectar.setIcon(new ImageIcon("src/br/univel/img/connect.png"));
@@ -295,8 +296,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	}
 	
 	private void instanciarNovoServidor(String ip, int porta, Arquivo arquivo) {
-		System.out.println("novo servidor");
-		ReadWriteFile rwf = new ReadWriteFile();
 		
 		try {
 			registry = LocateRegistry.getRegistry(ip, porta);
@@ -304,7 +303,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			
 			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
 			
-			System.out.println("baixando");
 			escreverArquivo(new File("C:\\JShare\\Downloads\\"+arquivo.getNome()), baixarArquivo);
 			
 		} catch (RemoteException e) {
@@ -350,7 +348,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 	}
 
-	protected void conectar() {
+	protected void conectarServidor() {
 		String nomeCliente = txtNome.getText();
 		if (nomeCliente.isEmpty()){
 			JOptionPane.showMessageDialog(this, "Digite um nome!");
@@ -378,21 +376,15 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			registry = LocateRegistry.getRegistry(ip, intPorta);
 			servidor = (IServer) registry.lookup(NOME_SERVICO);
 			cliente = new Cliente(nomeCliente, ip, intPorta);
-			//cliente = (Cliente) UnicastRemoteObject.exportObject(this,0);
 			
+			//Servidor registra cliente
 			servidor.registrarCliente(cliente);
 			
-			//publica lista de arquivos ao conectar
+			//Servidor publica lista de arquivos ao conectar
 			servidor.publicarListaArquivos(cliente, criarListaCliente());
 
-			btnDesconectar.setEnabled(true);
-			btnPesquisar.setEnabled(true);
-			btnDownload.setEnabled(true);
-			txtNome.setEnabled(false);
-			txtIPServidor.setEnabled(false);
-			txtPortaServidor.setEnabled(false);
-			btnConectar.setEnabled(false);
-			
+			habilitarDesabilitarBotoes("conectar");
+			iniciarClienteServidor();
 			
 		} catch (RemoteException e) {
 			// TODO: handle exception
@@ -403,14 +395,45 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		
 	}
 
-	private List<Arquivo> criarListaCliente() {
+	private void iniciarClienteServidor() {
+		String ip = txtIPCliente.getText().trim();
+		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
+			JOptionPane.showMessageDialog(this, "Digite um endereco de IP valido!");
+			txtIPCliente.requestFocus();
+			return;
+		}
 		
+		String porta = txtPortaCliente.getText().trim();
+		if (!porta.matches("[0-9]+") || porta.length() > 5) {
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numerico de no maximo 5 digitos!");
+			txtPortaCliente.requestFocus();
+			return;
+		}
+		
+		int intPorta = Integer.parseInt(porta);
+		
+		try {
+			IServer clienteServidor = (IServer) UnicastRemoteObject.exportObject(this, 0);
+			registry = LocateRegistry.createRegistry(intPorta);
+			registry.rebind(IServer.NOME_SERVICO, clienteServidor);
+		} catch (RemoteException e) {
+			JOptionPane.showMessageDialog(this, "Erro criando registro, verifique se a porta ja nao esta sendo usada.");
+			e.printStackTrace();
+		}
+
+	}
+
+	private List<Arquivo> criarListaCliente() {
 		//Cria lista de arquivos que estao na pasta JShare		
 		File dirUpload = new File("C:/JShare/Uploads");
+		File dirDownload = new File("C:JShare/Downloads");
 
 		//Se não existir uma pasta de Upload, então ele cria.
 		if (!dirUpload.exists())
 			dirUpload.mkdirs();
+		if (!dirDownload.exists())
+			dirDownload.mkdirs();
+		
 		
 		List<Arquivo> listaArquivos = new ArrayList<>();
 		List<Diretorio> listaDiretorios = new ArrayList<>();
@@ -468,6 +491,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		try {
 			dados = Files.readAllBytes(path);
 		} catch (IOException e) {
+			System.err.println("Erro ao ler arquivo");
 			throw new RuntimeException(e);
 		}
 		
@@ -478,7 +502,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		try {
 			Files.write(Paths.get(file.getPath()), dados, StandardOpenOption.CREATE);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Erro ao escrever arquivo");
 			e.printStackTrace();
 		}
 		
@@ -493,10 +517,34 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			servidor = null;
 		}
 		
-		btnDesconectar.setEnabled(false);
-		btnConectar.setEnabled(true);
-		txtNome.setEnabled(true);
-		txtIPServidor.setEnabled(true);
-		txtPortaServidor.setEnabled(true);
+		habilitarDesabilitarBotoes("desconectar");
+	}
+
+	private void habilitarDesabilitarBotoes(String acao) {
+		if (acao.equals("conectar")){
+			//Botões
+			btnDesconectar.setEnabled(true);
+			btnPesquisar.setEnabled(true);
+			btnDownload.setEnabled(true);
+			btnConectar.setEnabled(false);
+			
+			//Text Fields
+			txtNome.setEnabled(false);
+			txtIPServidor.setEnabled(false);
+			txtPortaServidor.setEnabled(false);
+		}
+		
+		if (acao.equals("desconectar")){
+			//Botões
+			btnDesconectar.setEnabled(false);
+			btnConectar.setEnabled(true);
+			
+			//Text fields
+			txtNome.setEnabled(true);
+			txtIPServidor.setEnabled(true);
+			txtPortaServidor.setEnabled(true);
+		}
+			
+		
 	}
 }
