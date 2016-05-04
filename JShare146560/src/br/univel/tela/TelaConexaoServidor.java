@@ -48,7 +48,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	private JTextArea textArea;
 	private IServer servidor;
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
-	private HashMap<Cliente, List<Arquivo>> arquivosServidor;
+	private HashMap<Cliente, List<Arquivo>> arquivosServidor = new HashMap<>();;
 	private HashMap<String, Cliente> clientesServidor;
 
 	/**
@@ -184,7 +184,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		
 		String ip = txtIP.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
-			JOptionPane.showMessageDialog(this, "Digite um endereco de IP válido!");
+			JOptionPane.showMessageDialog(this, "Digite um endereco de IP vï¿½lido!");
 			return;
 		}
 		
@@ -203,7 +203,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		}
 
 		try {
-
 			servidor = (IServer) UnicastRemoteObject.exportObject((IServer) this, 0);
 			registry = LocateRegistry.createRegistry(intPorta);
 			registry.rebind(IServer.NOME_SERVICO, servidor);
@@ -220,8 +219,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta ja esta sendo usada.");
 			e.printStackTrace();
 		}
-
-		
 	}
 
 	private void imprimir(String string) {
@@ -242,7 +239,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	public void publicarListaArquivos(Cliente c, List<Arquivo> lista)
 			throws RemoteException {
 		
-		arquivosServidor = new HashMap<>();
 		arquivosServidor.put(c, lista);
 		
 		for (int i = 0; i < lista.size(); i++) {

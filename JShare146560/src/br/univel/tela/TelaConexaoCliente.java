@@ -314,28 +314,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			e.printStackTrace();
 		}
 	}
-	
-	/*
-	private void instanciarNovoServidor(String ip, int porta, Arquivo arquivo) {
-		
-		try {
-			registry = LocateRegistry.getRegistry(ip, porta);
-			IServer clienteServidor = (IServer) registry.lookup(IServer.NOME_SERVICO);
-			
-			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
-			
-			escreverArquivo(new File("C:\\JShare\\Downloads\\"+arquivo.getNome()), baixarArquivo);
-			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-	}
-	*/
 
 	protected void consultarArquivo() {
 
@@ -415,6 +393,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			
 		} catch (RemoteException e) {
 			System.err.println("Erro ao iniciar sevi�o");
+			e.printStackTrace();
 		} catch (NotBoundException e) {
 			System.err.println("Erro ao iniciar sevi�o");
 			e.printStackTrace();
