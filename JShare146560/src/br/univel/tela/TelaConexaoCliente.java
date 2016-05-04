@@ -382,6 +382,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		}
 		
 		String ip = txtIPServidor.getText().trim();
+		String ipCliente = txtIPCliente.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
 			JOptionPane.showMessageDialog(this, "Digite um endereï¿½o de IP vï¿½lido!");
 			txtIPServidor.requestFocus();
@@ -389,6 +390,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		}
 		
 		String porta = txtPortaServidor.getText().trim();
+		String portaCliente = txtPortaCliente.getText().trim();
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
 			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numï¿½rico de no mï¿½ximo 5 dï¿½gitos!");
 			txtPortaServidor.requestFocus();
@@ -396,13 +398,16 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		}
 		
 		int intPorta = Integer.parseInt(porta);
+		int intPortaCliente = Integer.parseInt(portaCliente);
 		
 		try {
+			
+			//Conecta no Servidor, passando por parametro o IP e a Porta do servidor a ser conectado
 			registry = LocateRegistry.getRegistry(ip, intPorta);
 			servidor = (IServer) registry.lookup(NOME_SERVICO);
-			cliente = new Cliente(nomeCliente, ip, intPorta);
 			
-			//Servidor registra cliente
+			//Registra o MEU cliente no servidor com sua porta e ip
+			cliente = new Cliente(nomeCliente, ipCliente, intPortaCliente);
 			servidor.registrarCliente(cliente);
 			
 			//Servidor publica lista de arquivos ao conectar
@@ -412,21 +417,15 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			iniciarMeuServico();
 			
 		} catch (RemoteException e) {
-			// TODO: handle exception
+			System.err.println("Erro ao iniciar seviço");
 		} catch (NotBoundException e) {
-			// TODO Auto-generated catch block
+			System.err.println("Erro ao iniciar seviço");
 			e.printStackTrace();
 		}
 		
 	}
 
 	private void iniciarMeuServico() {
-		String ip = txtIPCliente.getText().trim();
-		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
-			JOptionPane.showMessageDialog(this, "Digite um endereco de IP valido!");
-			txtIPCliente.requestFocus();
-			return;
-		}
 		
 		String porta = txtPortaCliente.getText().trim();
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {

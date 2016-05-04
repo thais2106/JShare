@@ -42,13 +42,14 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 	private JPanel contentPane;
 	private JTextField txtIP;
 	private JTextField txtPorta;
-	Remote servidor;
 	private Registry registry;
 	private JButton btnDesconectar;
 	private JButton btnConectar;
 	private JTextArea textArea;
+	private IServer servidor;
 	private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy H:mm:ss:SSS");
 	private HashMap<Cliente, List<Arquivo>> arquivosServidor;
+	private HashMap<String, Cliente> clientesServidor;
 
 	/**
 	 * Launch the application.
@@ -183,7 +184,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		
 		String ip = txtIP.getText().trim();
 		if (!ip.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}")) {
-			JOptionPane.showMessageDialog(this, "Digite um endereï¿½o de IP vï¿½lido!");
+			JOptionPane.showMessageDialog(this, "Digite um endereco de IP válido!");
 			return;
 		}
 		
@@ -191,7 +192,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		String porta = txtPorta.getText().trim();
 
 		if (!porta.matches("[0-9]+") || porta.length() > 5) {
-			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numï¿½rico de no mï¿½ximo 5 dï¿½gitos!");
+			JOptionPane.showMessageDialog(this, "A porta deve ser um valor numï¿½rico de no maximo 5 digitos!");
 			return;
 		}
 		
@@ -207,7 +208,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			registry = LocateRegistry.createRegistry(intPorta);
 			registry.rebind(IServer.NOME_SERVICO, servidor);
 
-			imprimir("Serviï¿½o iniciado.");
+			imprimir("Servico iniciado.");
 
 			txtIP.setEnabled(false);
 			txtPorta.setEnabled(false);
@@ -216,7 +217,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			btnDesconectar.setEnabled(true);
 
 		} catch (RemoteException e) {
-			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta jï¿½ estï¿½ sendo usada.");
+			JOptionPane.showMessageDialog(this, "Erro ao criar registro, verifique se a porta ja esta sendo usada.");
 			e.printStackTrace();
 		}
 
@@ -232,9 +233,9 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	@Override
 	public void registrarCliente(Cliente c) throws RemoteException {
-		
+		clientesServidor = new HashMap<String, Cliente>();
+		clientesServidor.put(c.getIp(), c);
 		imprimir(c.getNome() + " registrado como cliente.");
-		
 	}
 
 	@Override
@@ -289,10 +290,10 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			}
 		}
 		
-		testar(resultado);
+		//testar(resultado);
 		return resultado;
 	}
-
+	/*
 	private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
 		
 		System.out.println("TESTE AQUIIII");
@@ -304,7 +305,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			}
 		}
 	}
-
+	 */
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
 		// TODO Auto-generated method stub
@@ -313,8 +314,8 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 
 	@Override
 	public void desconectar(Cliente c) throws RemoteException {
+		clientesServidor.remove(c);
 		imprimir(c.getNome()+" saiu.");
-		
 	}
 
 	@Override
