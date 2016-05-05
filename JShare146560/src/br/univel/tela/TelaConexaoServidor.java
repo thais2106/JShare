@@ -255,9 +255,11 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		
 		HashMap<Cliente, List<Arquivo>> resultado = new HashMap<>();
 		List<Arquivo> arquivosCliente = new ArrayList<>();
-
+		
+		//Percorre a lista de Cliente e seus arquivos
 		for(Map.Entry<Cliente, List<Arquivo>> lista : arquivosServidor.entrySet()) {
 			
+			//Percorre apenas os arquivos dos clientes
 			for(Arquivo arquivo: arquivosServidor.get(lista.getKey())){
 				
 				//Procura os arquivos que contém a String procurada. Tanto maiúsculas, quando minúsculas
@@ -279,13 +281,14 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 				}
 				
 				resultado.put(c, arquivosCliente);
+				arquivosCliente.clear();
 			}
 		}
-		
-		//testar(resultado);
+	
+		testar(resultado);
 		return resultado;
 	}
-	/*
+	
 	private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
 		
 		System.out.println("TESTE AQUIIII");
@@ -297,7 +300,7 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			}
 		}
 	}
-	 */
+	 
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
 		// TODO Auto-generated method stub
