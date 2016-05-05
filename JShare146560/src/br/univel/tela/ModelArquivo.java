@@ -22,7 +22,7 @@ public class ModelArquivo extends AbstractTableModel {
 	private int linhas;
 	
 	public ModelArquivo(Map<Cliente, List<Arquivo>> lista) {
-		
+		System.out.println("DENTRO DO MODEL");
 		//Variavel local recebe a lista passada para o construtor
 		this.listaArquivos = lista;
 		
@@ -32,13 +32,16 @@ public class ModelArquivo extends AbstractTableModel {
 		for (Entry<Cliente, List<Arquivo>> e : listaArquivos.entrySet())
 			linhas += e.getValue().size();
 		
+		System.out.println("linhas" + linhas);
+		
 		matriz = new Object[linhas][5];
 		
 		int linha = 0;
 		
 		for (Entry<Cliente, List<Arquivo>> e : listaArquivos.entrySet()) {
-			
+			System.out.println("passou aqui" + linha);
 			for (Arquivo arq: e.getValue()){
+				System.out.println("passou aqui - arquivo" + linha);
 				matriz[linha][0] = arq.getNome();
 				matriz[linha][1] = arq.getTamanho();
 				matriz[linha][2] = e.getKey().getNome();

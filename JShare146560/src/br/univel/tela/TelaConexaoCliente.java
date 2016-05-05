@@ -426,7 +426,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	private List<Arquivo> criarListaCliente() {
 		//Cria lista de arquivos que estao na pasta JShare		
 		File dirUpload = new File("C:/JShare/Uploads");
-		File dirDownload = new File("C:JShare/Downloads");
+		File dirDownload = new File("C:/JShare/Downloads");
 
 		//Se n�o existir uma pasta de Upload, ent�o ele cria.
 		if (!dirUpload.exists())

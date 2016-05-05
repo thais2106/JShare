@@ -176,8 +176,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
-
-		
 	}
 
 	protected void iniciarServico() {
@@ -261,7 +259,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			
 			//Percorre apenas os arquivos dos clientes
 			for(Arquivo arquivo: arquivosServidor.get(lista.getKey())){
-				
 				//Procura os arquivos que contém a String procurada. Tanto maiúsculas, quando minúsculas
 				if (arquivo.getNome().contains(nome.toLowerCase()) || 
 						arquivo.getNome().contains(nome.toUpperCase())) {
@@ -271,17 +268,18 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 				}
 			}
 			
+			System.out.println(lista.getKey().getNome());
+			
 			if (!arquivosCliente.isEmpty()){
 				Cliente c = new Cliente(lista.getKey().getNome(), 
 						lista.getKey().getIp(), 
 						lista.getKey().getPorta());
 
 				for (Arquivo ar : arquivosCliente) {
-					System.out.println(ar.getNome());
+					//System.out.println(ar.getNome());
 				}
 				
 				resultado.put(c, arquivosCliente);
-				arquivosCliente.clear();
 			}
 		}
 	
