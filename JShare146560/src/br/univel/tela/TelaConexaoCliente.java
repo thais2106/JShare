@@ -283,7 +283,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	}
 
 	protected void capturarArquivo() {
-		System.out.println("capturando arquivo");
 		
 		//Captura o nome do arquivo, o IP e a Porta do cliente que o possui
 		String nomeArquivo = (String) tableArquivos.getValueAt(tableArquivos.getSelectedRow(), 0);
@@ -301,9 +300,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 			clienteServidor.registrarCliente(cliente);
 			
 			byte[] baixarArquivo = clienteServidor.baixarArquivo(arquivo);
-			
-			System.out.println("baixarArquivo" + baixarArquivo);
-
 			escreverArquivo(new File("C:\\JShare\\Downloads\\"+arquivo.getNome()), baixarArquivo);	
 			
 		} catch (RemoteException e) {
@@ -428,7 +424,7 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 		File dirUpload = new File("C:/JShare/Uploads");
 		File dirDownload = new File("C:/JShare/Downloads");
 
-		//Se n�o existir uma pasta de Upload, ent�o ele cria.
+		//Se nao existir uma pasta de Upload, entao ele cria.
 		if (!dirUpload.exists())
 			dirUpload.mkdirs();
 		if (!dirDownload.exists())
@@ -472,7 +468,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 
 	@Override
 	public byte[] baixarArquivo(Arquivo arq) throws RemoteException {
-		System.out.println("dentro do metodo baixar arquivo");
 		List<Arquivo> arquivos = criarListaCliente();
 		//byte[] dados;
 		
@@ -487,14 +482,9 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	}
 
 	private byte[] lerArquivo(File file) {
-		
-		System.out.println("get path "+file.getPath());
-		
 		Path path = Paths.get(file.getPath());
-		System.out.println("path "+ path);
 		try {
 			byte[] dados = Files.readAllBytes(path);
-			System.out.println(dados);
 			return dados;
 		} catch (IOException e) {
 			System.err.println("Erro ao ler arquivo");
@@ -503,8 +493,6 @@ public class TelaConexaoCliente extends JFrame implements IServer{
 	}
 
 	private void escreverArquivo(File file, byte[] dados) {
-		System.out.println("path " + file.getPath());
-		System.out.println("dados "+ dados);
 		try {
 			Files.write(Paths.get(file.getPath()), dados, StandardOpenOption.CREATE);
 		} catch (IOException e) {

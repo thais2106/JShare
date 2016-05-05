@@ -238,11 +238,6 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 			throws RemoteException {
 		
 		arquivosServidor.put(c, lista);
-		
-		for (int i = 0; i < lista.size(); i++) {
-			System.out.println(lista.get(i).getNome() + lista.get(i).getTamanho());
-		}
-		
 		imprimir(c.getNome() + " publicou lista de arquivos.");
 		
 	}
@@ -262,34 +257,27 @@ public class TelaConexaoServidor extends JFrame implements Runnable, IServer {
 				//Procura os arquivos que contém a String procurada. Tanto maiúsculas, quando minúsculas
 				if (arquivo.getNome().contains(nome.toLowerCase()) || 
 						arquivo.getNome().contains(nome.toUpperCase())) {
-					//System.out.println(arquivo.getNome());
-					//System.out.println(arquivo.getTamanho());			
+					//System.out.println(arquivo.getNome());		
 					arquivosCliente.add(arquivo);
 				}
-			}
-			
-			System.out.println(lista.getKey().getNome());
+			}	
 			
 			if (!arquivosCliente.isEmpty()){
 				Cliente c = new Cliente(lista.getKey().getNome(), 
 						lista.getKey().getIp(), 
 						lista.getKey().getPorta());
 
-				for (Arquivo ar : arquivosCliente) {
-					//System.out.println(ar.getNome());
-				}
-				
 				resultado.put(c, arquivosCliente);
 			}
 		}
 	
-		testar(resultado);
+		//testar(resultado);
 		return resultado;
 	}
 	
 	private void testar(HashMap<Cliente, List<Arquivo>> resultado) {
 		
-		System.out.println("TESTE AQUIIII");
+		System.out.println("TESTE AQUI");
 		for(Map.Entry<Cliente, List<Arquivo>> lista : resultado.entrySet()) {
 			System.out.println(lista.getKey().getNome());
 
